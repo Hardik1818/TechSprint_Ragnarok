@@ -13,7 +13,7 @@ interface ServicePaymentModalProps {
 }
 
 const ServicePaymentModal: React.FC<ServicePaymentModalProps> = ({ isOpen, onClose, serviceName, serviceIcon }) => {
-    const { user, setUser, setTransactions } = useAppContext();
+    const { user } = useAppContext();
     const [step, setStep] = useState(1);
     const [identifier, setIdentifier] = useState('');
     const [amount, setAmount] = useState('');
@@ -37,30 +37,10 @@ const ServicePaymentModal: React.FC<ServicePaymentModalProps> = ({ isOpen, onClo
 
         setTimeout(() => {
             // Mock transaction logic
-            const newBalance = user.walletBalance - Number(amount);
-
             // In a real app, this would be an API call
-            const newTx = {
-                id: Date.now().toString(),
-                description: `${serviceName} Payment - ${identifier}`,
-                date: new Date().toISOString(),
-                amount: Number(amount),
-                type: 'withdraw', // Using 'withdraw' type for debit
-                status: 'Completed'
-            };
 
             // Update local state for demo purposes
-            // Ideally we'd call an API here that returns updated user/txs
-            // We are simulating it:
-
-            // 1. Update User Balance
-            // Note: In real app, we should use setUser with care or refetch
-            // but for this demo interaction we might just show success. 
-            // We won't mutate 'user' directly here without a setter that propagates to context correctly if context doesn't support partial updates easily. 
-            // But checking AppContext, setUser replaces the object.
-
-            // We'll skip deep global state update for safety unless requested, 
-            // but to "make it work" visually, let's assume success.
+            // This simulation just shows success view
 
             setIsLoading(false);
             setStep(3);

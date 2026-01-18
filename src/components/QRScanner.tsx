@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { X, Flashlight, Image as ImageIcon, QrCode, Zap } from 'lucide-react';
+import { X, Image as ImageIcon, QrCode, Zap } from 'lucide-react';
 import './QRScanner.css';
 
 interface QRScannerProps {

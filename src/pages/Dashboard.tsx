@@ -11,7 +11,7 @@ import {
     ShieldCheck,
     Lock,
     Unlock,
-    Wallet,
+
     CheckCircle2,
     CalendarDays,
     CalendarCheck
@@ -128,13 +128,13 @@ const Dashboard = () => {
 
         // Simple logic to distribute withdraws somewhat randomly for the chart
         // In a real app, this would come from the backend grouped by date
-        const withdrawDays = [5, 12, 15];
+        // In a real app, this would come from the backend grouped by date
 
         for (let day = 1; day <= currentDay; day++) {
             cumulativeEarned += dailyRate;
 
             // Simulate withdrawal on specific days
-            let todaysWithdraw = 0;
+            // Simulate withdrawal on specific days
             // Removed mock withdrawals to match the 34,830 balance request
 
             // Locked portion is a simple % of EARNED so far

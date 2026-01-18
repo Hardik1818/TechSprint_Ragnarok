@@ -6,7 +6,7 @@ import './History.css';
 import { useState } from 'react';
 
 const TransactionHistory = () => {
-    const { user, transactions } = useAppContext();
+    const { transactions } = useAppContext();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
 

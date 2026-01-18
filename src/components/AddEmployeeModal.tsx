@@ -45,31 +45,27 @@ const AddEmployeeModal = ({ isOpen, onClose, initialTab = 'single' }: AddEmploye
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Simulate API delay
-        setTimeout(() => {
-            const newEmployee = {
-                id: Date.now(),
-                name: formData.name,
-                role: formData.role,
-                status: 'Active',
-                salary: Number(formData.salary),
-                streaming: true,
-                joined: new Date().toISOString().split('T')[0],
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`,
-                email: formData.email,
-                phone: formData.phone,
-                salaryType: formData.salaryType as 'Monthly' | 'Weekly' | 'Daily',
-                paymentType: formData.paymentType
-            };
+        const newEmployee: any = {
+            name: formData.name,
+            role: formData.role,
+            status: 'Active',
+            salary: Number(formData.salary),
+            streaming: true,
+            joined: new Date().toISOString().split('T')[0],
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`,
+            email: formData.email,
+            phone: formData.phone,
+            salaryType: formData.salaryType as 'Monthly' | 'Weekly' | 'Daily',
+            paymentType: formData.paymentType
+        };
 
-            addEmployee(newEmployee);
-            setIsSubmitting(false);
-            setIsSuccess(true);
-        }, 1000);
+        await addEmployee(newEmployee);
+        setIsSubmitting(false);
+        setIsSuccess(true);
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,15 +74,15 @@ const AddEmployeeModal = ({ isOpen, onClose, initialTab = 'single' }: AddEmploye
 
         setIsSubmitting(true);
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             const text = event.target?.result as string;
             // Simple CSV parser
             try {
                 const lines = text.split('\n');
-                const newEmployees = lines.slice(1).filter(line => line.trim()).map((line, index) => {
+                const newEmployees = lines.slice(1).filter(line => line.trim()).map((line) => {
                     const [name, email, phone, salary, role, salaryType, paymentType] = line.split(',').map(item => item.trim());
                     return {
-                        id: Date.now() + index,
+                        id: 'temp-' + Math.random(), // Temporary ID, backend generates real one
                         name: name || 'Unknown',
                         email: email,
                         phone: phone,
@@ -102,11 +98,9 @@ const AddEmployeeModal = ({ isOpen, onClose, initialTab = 'single' }: AddEmploye
                 });
 
                 if (newEmployees.length > 0) {
-                    addEmployees(newEmployees);
-                    setTimeout(() => {
-                        setIsSubmitting(false);
-                        setIsSuccess(true);
-                    }, 1000);
+                    await addEmployees(newEmployees as any[]);
+                    setIsSubmitting(false);
+                    setIsSuccess(true);
                 } else {
                     alert('No valid data found in CSV');
                     setIsSubmitting(false);

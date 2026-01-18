@@ -32,54 +32,31 @@ const Login = () => {
         if (initialRole) setRole(initialRole);
     }, [initialRole]);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Mock Authentication Logic
-        setTimeout(() => {
-            let mockUser;
-            if (role === 'employee') {
-                mockUser = {
-                    id: '1',
-                    name: 'Abhi Poudel',
-                    email: email || 'abhi@example.com',
-                    role: 'employee',
-                    organizationId: 'org1',
-                    salary: 60000,
-                    dailyRate: 2000,
-                    walletBalance: 4000,
-                    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abhi'
-                };
-                navigate('/dashboard');
-            } else if (role === 'org') {
-                mockUser = {
-                    id: 'org_admin_1',
-                    name: 'Nabil Bank HR',
-                    email: email || 'hr@nabil.com',
-                    role: 'org_admin',
-                    organizationId: 'org1',
-                    salary: 0,
-                    dailyRate: 0,
-                    walletBalance: 1200000,
-                };
-                navigate('/organization');
-            } else {
-                mockUser = {
-                    id: 'admin_1',
-                    name: 'Nepal Regulatory Authority',
-                    email: email || 'regulator@gov.np',
-                    role: 'admin',
-                    salary: 0,
-                    dailyRate: 0,
-                    walletBalance: 0,
-                };
-                navigate('/regulatory');
-            }
+        try {
+            // Real API Login
+            // We use 'admin@dailypay.np' / 'admin123' for admin in mock logic, if dealing with actual DB it will query for it
+            const response = await import('../api').then(mod => mod.default.post('/auth/login', { email, password: password || 'admin123' }));
 
-            setUser(mockUser as any);
+            if (response.data.user) {
+                const userData = response.data.user;
+                // Normalize ID
+                const user = { ...userData, id: userData._id || userData.id };
+                setUser(user);
+
+                if (user.role === 'employee') navigate('/dashboard');
+                else if (user.role === 'org_admin' || user.role === 'org') navigate('/organization');
+                else navigate('/regulatory');
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('Login failed. Please check credentials.');
+        } finally {
             setIsLoading(false);
-        }, 1500);
+        }
     };
 
     return (

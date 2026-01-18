@@ -1,0 +1,145 @@
+.history-page {
+    padding: 24px;
+    padding-bottom: 80px;
+    /* Space for bottom nav */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.history-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.history-controls .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    gap: 10px;
+}
+
+.history-controls input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    width: 100%;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.history-controls .filter-box {
+    display: flex;
+    align-items: center;
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0 12px;
+    position: relative;
+    gap: 8px;
+}
+
+.history-controls select {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    outline: none;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    padding: 16px;
+    border-radius: 16px;
+    justify-content: space-between;
+}
+
+.history-item .tx-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+}
+
+.history-item .tx-icon.stream {
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--primary);
+}
+
+.history-item .tx-icon.withdraw {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--error);
+}
+
+.history-item .tx-info {
+    flex: 1;
+}
+
+.history-item h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.history-item .tx-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.history-item .tx-amount-col {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.history-item .amount {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.history-item .amount.stream {
+    color: var(--success);
+}
+
+.history-item .amount.withdraw {
+    color: var(--text-primary);
+}
+
+.history-item .status {
+    font-size: 0.75rem;
+    text-transform: capitalize;
+    color: var(--text-muted);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}

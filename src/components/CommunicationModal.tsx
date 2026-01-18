@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import './OrgModals.css';
+import { useAppContext } from '../context/AppContext';
 
 interface CommunicationModalProps {
     isOpen: boolean;
@@ -11,25 +12,16 @@ interface CommunicationModalProps {
 }
 
 const CommunicationModal = ({ isOpen, onClose }: CommunicationModalProps) => {
+    const { sendNotification, notifications } = useAppContext();
     const [message, setMessage] = useState('');
     const [recipient, setRecipient] = useState('all'); // all, specific
-    const [sentMessages, setSentMessages] = useState([
-        { id: 1, to: 'All Employees', body: 'Please update your KYC details by Friday.', date: 'Today, 10:30 AM', read: 45 },
-        { id: 2, to: 'Engineering Team', body: 'Server maintenance scheduled for tonight.', date: 'Yesterday, 4:00 PM', read: 12 }
-    ]);
 
-    const handleSend = () => {
+    // Sort notifications by new first
+    const sentMessages = notifications.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    const handleSend = async () => {
         if (!message.trim()) return;
-
-        const newMsg = {
-            id: Date.now(),
-            to: recipient === 'all' ? 'All Employees' : 'Selected Employees',
-            body: message,
-            date: 'Just now',
-            read: 0
-        };
-
-        setSentMessages([newMsg, ...sentMessages]);
+        await sendNotification('Announcement', message, recipient === 'all' ? 'All' : recipient);
         setMessage('');
     };
 
@@ -88,17 +80,17 @@ const CommunicationModal = ({ isOpen, onClose }: CommunicationModalProps) => {
                         <div className="history-section" style={{ borderLeft: '1px solid var(--glass-border)', paddingLeft: 24 }}>
                             <h4 style={{ marginBottom: 12, fontSize: '0.95rem' }}>Recent Broadcasts</h4>
                             <div className="msg-list">
-                                {sentMessages.map(msg => (
+                                {sentMessages.map((msg: any) => (
                                     <div key={msg.id} className="msg-item">
                                         <div className="msg-header-row">
-                                            <strong>{msg.to}</strong>
-                                            <span>{msg.date}</span>
+                                            <strong>{msg.recipient === 'All' ? 'All Employees' : msg.recipient}</strong>
+                                            <span>{new Date(msg.timestamp).toLocaleDateString()}</span>
                                         </div>
                                         <p className="msg-body" style={{ margin: '8px 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                                            "{msg.body}"
+                                            "{msg.message}"
                                         </p>
                                         <div style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary)' }}>
-                                            <Check size={12} /> {msg.read} Read
+                                            <Check size={12} /> Sent
                                         </div>
                                     </div>
                                 ))}

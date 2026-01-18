@@ -19,25 +19,33 @@ import CommunicationModal from '../components/CommunicationModal';
 import './OrgDashboard.css';
 
 const OrgDashboard = () => {
-    const { user } = useAppContext();
+    const { user, employees } = useAppContext();
     const [isCycleModalOpen, setIsCycleModalOpen] = useState(false);
     const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
     const [isCommunicationOpen, setIsCommunicationOpen] = useState(false);
 
+    // Calculate Dynamic Stats (Monthly Basis)
+    const totalSalaries = employees.reduce((sum, emp) => sum + (emp.salary || 0), 0);
+    const totalEmployees = employees.length;
+
+    // Assuming 5,000,000 is the MONTHLY funding limit set for this org
+    const monthlyBudget = 5000000;
+    const distributedThisMonth = totalSalaries; // Full salary is allocated for distribution
+    const remainingBudget = monthlyBudget - distributedThisMonth;
+
     // Requested Metrics
     const stats = [
-        { label: 'Total Loaded Balance', value: 'NPR 5,000,000', icon: Wallet, color: 'blue', sub: 'Lifetime Deposit' },
-        { label: 'Distributed Balance', value: 'NPR 2,400,000', icon: ArrowUpRight, color: 'green', sub: 'Total Distributed' },
-        { label: 'Remaining for Dist.', value: 'NPR 2,100,000', icon: PieChart, color: 'orange', sub: 'Allocated' },
-        { label: 'Current Available', value: 'NPR 500,000', icon: CreditCard, color: 'purple', sub: 'Free Cash' },
+        { label: 'Monthly Budget', value: `NPR ${monthlyBudget.toLocaleString()}`, icon: Wallet, color: 'blue', sub: 'January Limit' },
+        { label: 'Distributed Amount', value: `NPR ${totalSalaries.toLocaleString()}`, icon: ArrowUpRight, color: 'green', sub: 'Distributed This Month' },
+        { label: 'Available Balance', value: `NPR ${remainingBudget.toLocaleString()}`, icon: PieChart, color: 'orange', sub: 'Left for distribution' },
+        { label: 'Active Employees', value: totalEmployees.toString(), icon: CreditCard, color: 'purple', sub: 'Current Employees' },
     ];
 
+    // Mock transactions for now as we don't fetch all org transactions yet
     const transactions = [
         { id: 'TX1001', date: '2025-01-16', employee: 'Kiran Thapa', amount: '2,000', type: 'Daily Stream', status: 'Completed' },
         { id: 'TX1002', date: '2025-01-16', employee: 'Sita Sharma', amount: '2,500', type: 'Daily Stream', status: 'Completed' },
         { id: 'TX1003', date: '2025-01-15', employee: 'Ram Prasad', amount: '15,000', type: 'Advance', status: 'Approved' },
-        { id: 'TX1004', date: '2025-01-15', employee: 'Kiran Thapa', amount: '2,000', type: 'Daily Stream', status: 'Completed' },
-        { id: 'TX1005', date: '2025-01-14', employee: 'Hari Krishna', amount: '5,000', type: 'Bonus', status: 'Completed' },
     ];
 
     return (
@@ -97,20 +105,16 @@ const OrgDashboard = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {[
-                                        { name: 'Kiran Thapa', salary: '45,000', rate: '1,500', accrued: '12,000', status: 'Active' },
-                                        { name: 'Sita Sharma', salary: '75,000', rate: '2,500', accrued: '20,000', status: 'Active' },
-                                        { name: 'Ram Prasad', salary: '55,000', rate: '1,833', accrued: '14,600', status: 'On Leave' },
-                                    ].map((emp, i) => (
+                                    {employees.slice(0, 5).map((emp, i) => (
                                         <tr key={i}>
                                             <td>
                                                 <div className="table-user">
                                                     <span>{emp.name}</span>
                                                 </div>
                                             </td>
-                                            <td>NPR {emp.salary}</td>
-                                            <td>NPR {emp.rate}</td>
-                                            <td><span className="accrued-tag">NPR {emp.accrued}</span></td>
+                                            <td>NPR {emp.salary?.toLocaleString()}</td>
+                                            <td>NPR {Math.round((emp.salary || 0) / 30).toLocaleString()}</td>
+                                            <td><span className="accrued-tag">NPR {Math.round(((emp.salary || 0) / 30) * new Date().getDate()).toLocaleString()}</span></td>
                                             <td><span className={`status-pill ${emp.status.toLowerCase().replace(' ', '')}`}>{emp.status}</span></td>
                                         </tr>
                                     ))}

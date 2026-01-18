@@ -13,6 +13,7 @@ import OrgEmployees from './pages/OrgEmployees';
 import OrgPayroll from './pages/OrgPayroll';
 import AdminCompliance from './pages/AdminCompliance';
 import AdminAnalytics from './pages/AdminAnalytics';
+import TransactionHistory from './pages/TransactionHistory';
 
 // Route Guard component
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
@@ -66,6 +67,11 @@ function AppRoutes() {
       <Route path="/wallet" element={
         <ProtectedRoute allowedRoles={['employee']}>
           <Wallet />
+        </ProtectedRoute>
+      } />
+      <Route path="/transactions" element={
+        <ProtectedRoute allowedRoles={['employee']}>
+          <TransactionHistory />
         </ProtectedRoute>
       } />
       <Route path="/settings" element={

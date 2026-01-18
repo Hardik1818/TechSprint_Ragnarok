@@ -1,5 +1,6 @@
 
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     TrendingUp,
     ArrowUpRight,
@@ -12,7 +13,8 @@ import {
     Unlock,
     Wallet,
     CheckCircle2,
-    CalendarDays
+    CalendarDays,
+    CalendarCheck
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import './Dashboard.css';
@@ -43,6 +45,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const { user, transactions, loading, setUser } = useAppContext();
     const [lockPercentage, setLockPercentage] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
@@ -89,11 +92,17 @@ const Dashboard = () => {
         );
     }
 
-    const earnedThisMonth = 32000; // Mock calculation
-    const totalDays = 30;
-    const currentDay = 16;
+    // Dynamic Calculations
+    const today = new Date();
+    const currentDay = today.getDate();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const totalDays = daysInMonth; // 30 or 31
+
+    const dailyRate = user?.salary ? Math.round(user.salary / totalDays) : (user?.dailyRate || 2000);
+    const earnedThisMonth = dailyRate * currentDay;
+
+    // Progress for progress bar
     const progress = (currentDay / totalDays) * 100;
-    const dailyRate = user?.dailyRate || 2000;
 
     // Calculate Locked and Withdrawable
     const lockedAmount = Math.round(earnedThisMonth * (lockPercentage / 100));
@@ -102,8 +111,14 @@ const Dashboard = () => {
 
     // Withdrawable = Earned - Withdrawn - Locked
     // logic: We assume Wallet Balance reflects (Earned - Withdrawn).
-    const currentWalletBalance = user?.walletBalance || 0;
+    // User requested to make "withdrawable balance" to 34,830 (which matches earnedThisMonth)
+    // and apply lock percentage to today's payout.
+    const currentWalletBalance = earnedThisMonth;
     const withdrawableBalance = Math.max(0, currentWalletBalance - lockedAmount);
+
+    // Daily Locked Logic
+    const lockedDaily = Math.round(dailyRate * (lockPercentage / 100));
+    const availableDaily = dailyRate - lockedDaily;
 
     // Generate Chart Data
     const chartData = useMemo(() => {
@@ -120,10 +135,7 @@ const Dashboard = () => {
 
             // Simulate withdrawal on specific days
             let todaysWithdraw = 0;
-            if (withdrawDays.includes(day)) {
-                todaysWithdraw = 5000; // Mock withdrawal amount
-                cumulativeWithdrawn += todaysWithdraw;
-            }
+            // Removed mock withdrawals to match the 34,830 balance request
 
             // Locked portion is a simple % of EARNED so far
             const currentLocked = Math.round(cumulativeEarned * (lockPercentage / 100));
@@ -168,24 +180,37 @@ const Dashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="stat-card balance-card"
+                    className="stat-card"
                 >
                     <div className="card-top">
-                        <span className="label">Withdrawable Balance</span>
-                        <div className="icon-box"><Wallet size={20} /></div>
+                        <span className="label">Today's Payout</span>
+                        <div className="icon-box" style={{ padding: '8px' }}><CalendarDays size={18} /></div>
                     </div>
-                    <div className="balance-amount">Rs. {withdrawableBalance.toLocaleString()}</div>
-                    <div className="card-bottom">
-                        {lockedAmount > 0 && (
-                            <span className="trend" style={{ opacity: 0.9, fontSize: '0.8rem', color: isLocked ? 'var(--warning)' : 'inherit' }}>
-                                <Lock size={12} style={{ marginRight: 4 }} />
-                                Rs. {lockedAmount.toLocaleString()} {isLocked ? 'Locked' : 'Reserved'}
+                    <div className="balance-amount" style={{ fontSize: '2rem' }}>Rs. {availableDaily.toLocaleString()}</div>
+
+                    <div style={{ display: 'flex', gap: '8px', margin: '8px 0', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                            <Clock size={14} /> <span>8h Shift</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                            <TrendingUp size={14} /> <span>Rs. {Math.round(dailyRate / 8)}/hr</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                            <CalendarCheck size={14} /> <span>{currentDay} Days</span>
+                        </div>
+                    </div>
+
+                    <div className="card-bottom" style={{ marginTop: '4px' }}>
+                        {lockedDaily > 0 ? (
+                            <span className="trend" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Lock size={12} />
+                                Rs. {lockedDaily.toLocaleString()} Locked
+                            </span>
+                        ) : (
+                            <span className="trend positive" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckCircle2 size={14} /> Credited for today
                             </span>
                         )}
-                        {!lockedAmount && (
-                            <span className="trend positive"><TrendingUp size={14} /> +Rs. {user?.dailyRate} today</span>
-                        )}
-                        <button className="withdraw-btn">Withdraw Now</button>
                     </div>
                 </motion.div>
 
@@ -193,34 +218,48 @@ const Dashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="stat-card"
+                    className="stat-card balance-card"
                     style={{ borderTop: isLocked ? '4px solid var(--success)' : '4px solid var(--primary)' }}
                 >
                     <div className="card-top">
                         <span className="label">Auto-Lock Savings</span>
                         <div className="icon-box" style={{
+                            padding: '8px',
                             background: isLocked ? 'rgba(0, 230, 118, 0.1)' : 'rgba(255, 64, 129, 0.1)',
                             color: isLocked ? 'var(--success)' : '#ff4081'
                         }}>
-                            {isLocked ? <CheckCircle2 size={20} /> : (lockPercentage > 0 ? <Lock size={20} /> : <Unlock size={20} />)}
+                            {isLocked ? <CheckCircle2 size={18} /> : (lockPercentage > 0 ? <Lock size={18} /> : <Unlock size={18} />)}
                         </div>
                     </div>
-                    <div className="amount" style={{ fontSize: '1.5rem', marginTop: 'auto' }}>
-                        {lockPercentage}% <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 400 }}>of earnings</span>
+
+                    <div className="balance-amount" style={{ fontSize: '2rem' }}>Rs. {withdrawableBalance.toLocaleString()}</div>
+                    <div className="card-bottom" style={{ marginBottom: '12px', marginTop: '4px' }}>
+                        <span className="trend" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                            Withdrawable Balance
+                        </span>
                     </div>
 
-                    <div className="slider-container" style={{ marginTop: '16px' }}>
+                    <button className="withdraw-btn" onClick={() => navigate('/wallet')} style={{ width: '100%', marginBottom: '16px', padding: '10px' }}>
+                        Withdraw Now
+                    </button>
+
+                    <div className="slider-container" style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '12px' }}>
                         {isLocked ? (
                             <div className="locked-status">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
+                                    <span style={{ color: 'var(--text-muted)' }}>Locked Amount</span>
+                                    <span style={{ color: 'var(--success)', fontWeight: 600 }}>{lockPercentage}%</span>
+                                </div>
                                 <div className="progress-bar" style={{ height: 6 }}>
                                     <div className="progress-fill" style={{ width: '100%', background: 'var(--success)' }}></div>
                                 </div>
-                                <span style={{ fontSize: '0.75rem', color: 'var(--success)', display: 'block', marginTop: 8 }}>
-                                    Funds locked until month end
-                                </span>
                             </div>
                         ) : (
                             <>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Lock Savings</span>
+                                    <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{lockPercentage}%</span>
+                                </div>
                                 <input
                                     type="range"
                                     min="0"
@@ -229,27 +268,26 @@ const Dashboard = () => {
                                     value={lockPercentage}
                                     onChange={handleLockChange}
                                     className="lock-slider"
-                                    style={{ width: '100%', accentColor: 'var(--primary)' }}
+                                    style={{ width: '100%', accentColor: 'var(--primary)', marginBottom: '8px' }}
                                 />
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                                    <span>0%</span>
-                                    <span>50%</span>
-                                </div>
                                 {lockPercentage > 0 && (
                                     <button
                                         onClick={handleConfirmLock}
                                         style={{
                                             width: '100%',
-                                            marginTop: 12,
                                             padding: '6px',
                                             fontSize: '0.8rem',
-                                            background: 'var(--surface-light)',
+                                            background: 'transparent',
                                             border: '1px solid var(--primary)',
                                             color: 'var(--primary)',
                                             borderRadius: 'var(--radius-md)',
-                                            cursor: 'pointer'
-                                        }}>
-                                        Lock Funds
+                                            cursor: 'pointer',
+                                            fontWeight: 500,
+                                            transition: 'all 0.2s'
+                                        }}
+                                        className="btn-outline-hover"
+                                    >
+                                        Confirm Lock
                                     </button>
                                 )}
                             </>
@@ -286,9 +324,9 @@ const Dashboard = () => {
                         <span className="label">Monthly Salary</span>
                         <div className="icon-box salary"><CreditCard size={20} /></div>
                     </div>
-                    <div className="amount">Rs. {user?.salary.toLocaleString()}</div>
+                    <div className="amount">Rs. {user?.salary?.toLocaleString()}</div>
                     <div className="stat-info">
-                        Daily Access Rate: <strong>Rs. {user?.dailyRate}</strong>
+                        Daily Access Rate: <strong>Rs. {dailyRate.toLocaleString()}</strong>
                     </div>
                 </motion.div>
             </div>

@@ -1,19 +1,30 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User, Transaction } from '../types';
+import api from '../api';
 
 export interface Employee {
     id: number | string;
+    _id?: string; // MongoDB ID
     name: string;
     role: string;
-    status: string;
+    status: string; // 'Active' etc.
     salary: number;
     streaming: boolean;
     joined: string;
-    avatar: string;
+    avatar?: string;
+    profileImage?: string;
     email?: string;
     phone?: string;
     salaryType?: 'Monthly' | 'Weekly' | 'Daily';
     paymentType?: string;
+    payroll?: {
+        employeeSSF: number;
+        employerSSF: number;
+        monthlyTax: number;
+        netSalary: number;
+        dailyPayout: number;
+        weeklyPayout: number;
+    };
 }
 
 export interface AuditLog {
@@ -37,6 +48,7 @@ export interface Notification {
 
 export interface UnlockRequest {
     id: string;
+    _id?: string;
     employeeId: string;
     employeeName: string;
     amount: number;
@@ -49,17 +61,22 @@ interface AppContextType {
     setUser: (user: User | null) => void;
     transactions: Transaction[];
     setTransactions: (txs: Transaction[]) => void;
+
     employees: Employee[];
-    addEmployee: (employee: Employee) => void;
-    addEmployees: (employees: Employee[]) => void;
-    updateEmployee: (id: string | number, updates: Partial<Employee>, reason: string, adminName: string) => void;
+    addEmployee: (employee: Employee) => Promise<void>;
+    addEmployees: (employees: Employee[]) => Promise<void>;
+    updateEmployee: (id: string | number, updates: Partial<Employee>, reason: string, adminName: string) => Promise<void>;
+
     unlockRequests: UnlockRequest[];
-    requestUnlock: (req: Omit<UnlockRequest, 'id' | 'status' | 'date' | 'employeeName'>) => void;
-    handleUnlockRequest: (id: string, status: 'Approved' | 'Rejected') => void;
+    requestUnlock: (req: Omit<UnlockRequest, 'id' | 'status' | 'date' | 'employeeName'>) => Promise<void>;
+    handleUnlockRequest: (id: string, status: 'Approved' | 'Rejected') => Promise<void>;
+
     auditLogs: AuditLog[];
-    addAuditLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => void;
+    addAuditLog: (log: Omit<AuditLog, 'id' | 'timestamp'>) => Promise<void>;
+
     notifications: Notification[];
-    sendNotification: (title: string, message: string, recipient: string) => void;
+    sendNotification: (title: string, message: string, recipient: string) => Promise<void>;
+
     loading: boolean;
     logout: () => void;
 }
@@ -78,183 +95,183 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('user');
+        setTransactions([]);
+        setEmployees([]);
+        setUnlockRequests([]);
     };
 
-    const addEmployee = (employee: Employee) => {
-        setEmployees(prev => [...prev, employee]);
-    };
+    // Load initial data based on user being logged in
+    useEffect(() => {
+        const loadInitialData = async () => {
+            const savedUserStr = localStorage.getItem('user');
+            if (savedUserStr) {
+                try {
+                    const savedUser = JSON.parse(savedUserStr);
+                    // Fetch fresh user data
+                    // If ID is mock (like '1'), fetch that ID. If mongoID, fetch that.
+                    // For now, we trust the ID in localStorage to query the api
 
-    const addEmployees = (newEmployees: Employee[]) => {
-        setEmployees(prev => [...prev, ...newEmployees]);
-    };
+                    if (savedUser._id) {
+                        const userRes = await api.get(`/users/${savedUser._id}`);
+                        setUser({ ...userRes.data, id: userRes.data._id }); // ensuring id matches for frontend compatibility
+                    } else if (savedUser.id && savedUser.id.length > 5) {
+                        try {
+                            const userRes = await api.get(`/users/${savedUser.id}`);
+                            setUser({ ...userRes.data, id: userRes.data._id });
+                        } catch {
+                            setUser(savedUser); // fallback if not found
+                        }
+                    } else {
+                        setUser(savedUser);
+                    }
 
-    const addAuditLog = (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
-        const newLog: AuditLog = {
-            id: 'log-' + Date.now(),
-            timestamp: new Date().toISOString(),
-            ...log
-        };
-        setAuditLogs(prev => [newLog, ...prev]);
-    };
-
-    const updateEmployee = (id: string | number, updates: Partial<Employee>, reason: string, adminName: string) => {
-        setEmployees(prev => prev.map(emp => {
-            if (emp.id === id) {
-                // Determine changes for log
-                const changes = Object.keys(updates).map(k => `${k}: ${emp[k as keyof Employee]} -> ${updates[k as keyof Employee]}`).join(', ');
-                addAuditLog({
-                    action: 'Update Employee',
-                    targetId: id.toString(),
-                    targetType: 'Employee',
-                    changedBy: adminName,
-                    details: `Reason: ${reason}. Changes: ${changes}`
-                });
-                return { ...emp, ...updates };
+                } catch (error) {
+                    console.error('Failed to parse user from local storage or fetch:', error);
+                    localStorage.removeItem('user');
+                }
             }
-            return emp;
-        }));
+            setLoading(false);
+        };
+
+        loadInitialData();
+    }, []);
+
+    // Effect to load role-specific data when user changes
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchData = async () => {
+            try {
+                if (user.role === 'employee') {
+                    // Load Wallet Transactions
+                    const txRes = await api.get(`/transactions/${user.id || user._id}`);
+                    setTransactions(txRes.data.map((tx: any) => ({ ...tx, id: tx._id })));
+                } else if (user.role === 'org_admin' || user.role === 'admin') {
+                    // Load Employees list
+                    const empRes = await api.get('/users');
+                    setEmployees(empRes.data.map((e: any) => ({ ...e, id: e._id || e.id })));
+
+                    // Load Requests
+                    const reqRes = await api.get('/requests');
+                    setUnlockRequests(reqRes.data.map((r: any) => ({ ...r, id: r._id, employeeId: r.employeeId })));
+
+                    // Load Audit Logs and Notifications
+                    const auditRes = await api.get('/audit');
+                    setAuditLogs(auditRes.data.map((l: any) => ({ ...l, id: l._id })));
+
+                    // Load Notifications
+                    try {
+                        const notifRes = await api.get('/notifications/All');
+                        setNotifications(notifRes.data.map((n: any) => ({ ...n, id: n._id })));
+                    } catch (e) { console.error('Error fetching notifications', e); }
+                }
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            }
+        };
+
+        fetchData();
+        localStorage.setItem('user', JSON.stringify(user));
+
+    }, [user]);
+
+
+    const addEmployee = async (employee: Employee) => {
+        try {
+            const res = await api.post('/users', { ...employee, role: 'employee', password: 'password123' }); // default password
+            const newEmp = { ...res.data, id: res.data._id };
+            setEmployees(prev => [...prev, newEmp]);
+            await addAuditLog({
+                action: 'Add Employee',
+                targetId: newEmp.id,
+                targetType: 'Employee',
+                changedBy: user?.name || 'Admin',
+                details: `Added new employee ${newEmp.name}`
+            });
+        } catch (error) {
+            console.error(error);
+            alert('Failed to add employee');
+        }
     };
 
-    const requestUnlock = (req: Omit<UnlockRequest, 'id' | 'status' | 'date' | 'employeeName'>) => {
-        // Find current user's name if not provided (though in this context we might need it)
+    const addEmployees = async (newEmployees: Employee[]) => {
+        // Bulk add not implemented on API deeply yet, so loop for now or add bulk route
+        // Assuming user wants simple loop
+        for (const emp of newEmployees) {
+            await addEmployee(emp);
+        }
+    };
+
+    const addAuditLog = async (log: Omit<AuditLog, 'id' | 'timestamp'>) => {
+        try {
+            const res = await api.post('/audit', log);
+            setAuditLogs(prev => [{ ...res.data, id: res.data._id }, ...prev]);
+        } catch (e) { console.error(e) }
+    };
+
+    const updateEmployee = async (id: string | number, updates: Partial<Employee>, reason: string, adminName: string) => {
+        try {
+            const res = await api.put(`/users/${id}`, updates);
+            // Log update
+            const changes = Object.keys(updates).map(k => `${k}`).join(', ');
+            await addAuditLog({
+                action: 'Update Employee',
+                targetId: id.toString(),
+                targetType: 'Employee',
+                changedBy: adminName,
+                details: `Reason: ${reason}. Updated: ${changes}`
+            });
+
+            setEmployees(prev => prev.map(emp => emp.id === id ? { ...emp, ...res.data, id: res.data._id } : emp));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const requestUnlock = async (req: Omit<UnlockRequest, 'id' | 'status' | 'date' | 'employeeName'>) => {
         const name = user?.name || 'Unknown Employee';
-        const newRequest: UnlockRequest = {
-            id: Date.now().toString(),
+        const payload = {
+            ...req,
             employeeId: req.employeeId,
             employeeName: name,
-            amount: req.amount,
             status: 'Pending',
             date: new Date().toISOString().split('T')[0]
         };
-        setUnlockRequests(prev => [newRequest, ...prev]);
+        try {
+            const res = await api.post('/requests', payload);
+            setUnlockRequests(prev => [{ ...res.data, id: res.data._id }, ...prev]);
+        } catch (error) { console.error(error); }
     };
 
-    const handleUnlockRequest = (id: string, status: 'Approved' | 'Rejected') => {
-        setUnlockRequests(prev => prev.map(req => {
-            if (req.id === id) {
-                // Side effect: If approved, ensure streaming is active for that employee
-                if (status === 'Approved') {
-                    setEmployees(emps => emps.map(e =>
-                        e.id.toString() === req.employeeId ? { ...e, streaming: true } : e
-                    ));
-                    addAuditLog({
+    const handleUnlockRequest = async (id: string, status: 'Approved' | 'Rejected') => {
+        try {
+            await api.put(`/requests/${id}`, { status });
+            // If approved, local state update happens via response
+            setUnlockRequests(prev => prev.map(req => req.id === id ? { ...req, status } : req));
+
+            if (status === 'Approved') {
+                // Refresh employees to see streaming status change
+                const userId = unlockRequests.find(r => r.id === id)?.employeeId;
+                if (userId) {
+                    setEmployees(emps => emps.map(e => e.id.toString() === userId ? { ...e, streaming: true } : e));
+                    await addAuditLog({
                         action: 'Unlock Salary',
-                        targetId: req.employeeId,
+                        targetId: userId,
                         targetType: 'Employee',
-                        changedBy: 'Admin', // In real app, get from session
-                        details: `Approved unlock request for NPR ${req.amount}`
+                        changedBy: user?.name || 'Admin',
+                        details: `Approved unlock request`
                     });
-
-                    // Optional: Create a transaction record
-                    /* 
-                    const newTx: Transaction = {
-                        id: 'tx-' + Date.now(),
-                        userId: req.employeeId,
-                        amount: req.amount,
-                        type: 'unlock',
-                        status: 'completed',
-                        date: new Date().toISOString(),
-                        description: 'Salary Unlocked by Admin'
-                    };
-                    setTransactions(txs => [newTx, ...txs]);
-                    */
                 }
-                return { ...req, status };
             }
-            return req;
-        }));
+        } catch (error) { console.error(error); }
     };
 
-    const sendNotification = (title: string, message: string, recipient: string) => {
-        const newNotif: Notification = {
-            id: 'notif-' + Date.now(),
-            title,
-            message,
-            recipient,
-            timestamp: new Date().toISOString(),
-            read: false
-        };
-        setNotifications(prev => [newNotif, ...prev]);
-        addAuditLog({
-            action: 'Send Notification',
-            targetId: recipient,
-            targetType: 'System',
-            changedBy: 'Admin',
-            details: `Title: ${title}`
-        });
+    const sendNotification = async (title: string, message: string, recipient: string) => {
+        try {
+            const res = await api.post('/notifications', { title, message, recipient });
+            setNotifications(prev => [{ ...res.data, id: res.data._id }, ...prev]);
+        } catch (e) { console.error(e) }
     };
-
-    useEffect(() => {
-        // Check local storage for existing session
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            try {
-                setUser(JSON.parse(savedUser));
-            } catch (error) {
-                console.error('Failed to parse user from local storage:', error);
-                localStorage.removeItem('user');
-            }
-        }
-
-        // Default transactions
-        const mockTransactions: Transaction[] = [
-            {
-                id: 'tx1',
-                userId: '1',
-                amount: 2000,
-                type: 'daily_credit',
-                status: 'completed',
-                date: new Date().toISOString(),
-                description: 'Daily Salary Earned'
-            },
-            {
-                id: 'tx2',
-                userId: '1',
-                amount: 2000,
-                type: 'daily_credit',
-                status: 'completed',
-                date: new Date(Date.now() - 86400000).toISOString(),
-                description: 'Daily Salary Earned'
-            },
-            {
-                id: 'tx3',
-                userId: '1',
-                amount: 500,
-                type: 'withdraw',
-                status: 'completed',
-                date: new Date(Date.now() - 172800000).toISOString(),
-                description: 'Transfer to Bank Account'
-            }
-        ];
-
-        setTransactions(mockTransactions);
-
-        // Default employees
-        const mockEmployees: Employee[] = [
-            { id: 1, name: 'Abhi Poudel', role: 'Product Manager', status: 'Active', salary: 60000, streaming: true, joined: '2023-01-15', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Abhi' },
-            { id: 2, name: 'Sita Sharma', role: 'Senior Developer', status: 'Active', salary: 120000, streaming: true, joined: '2022-11-01', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sita' },
-            { id: 3, name: 'Ram Prasad', role: 'Accountant', status: 'On Leave', salary: 45000, streaming: false, joined: '2023-03-10', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ram' },
-            { id: 4, name: 'Binita Thapa', role: 'Marketing Head', status: 'Active', salary: 85000, streaming: true, joined: '2023-06-22', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Binita' },
-            { id: 5, name: 'Hari Bahadur', role: 'Support Lead', status: 'Inactive', salary: 35000, streaming: false, joined: '2023-08-05', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Hari' },
-        ];
-
-        setEmployees(mockEmployees);
-
-        // Default unlock requests for testing
-        const mockUnlockRequests: UnlockRequest[] = [
-            { id: 'ur1', employeeId: '3', employeeName: 'Ram Prasad', amount: 5000, status: 'Pending', date: new Date().toISOString().split('T')[0] },
-            { id: 'ur2', employeeId: '4', employeeName: 'Binita Thapa', amount: 12000, status: 'Approved', date: '2025-01-10' }
-        ];
-        setUnlockRequests(mockUnlockRequests);
-
-        setLoading(false);
-    }, []);
-
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        }
-    }, [user]);
 
     return (
         <AppContext.Provider value={{

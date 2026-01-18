@@ -39,12 +39,12 @@
 
 .stat-card {
     background: var(--surface);
-    padding: 24px;
+    padding: 20px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     position: relative;
     overflow: hidden;
 }

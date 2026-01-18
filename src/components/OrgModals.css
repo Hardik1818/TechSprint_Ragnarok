@@ -1,0 +1,234 @@
+/* Existing content preserved via append, but tool overwrites so I must include all. */
+/* Wait, I should use replace_file_content or write the whole file. I'll use replace to add grid-2 at the end */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    width: 90%;
+    max-width: 500px;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modal-container.large {
+    max-width: 700px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.modal-header {
+    margin-bottom: 24px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Tabs */
+.modal-tabs {
+    display: flex;
+    gap: 16px;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary);
+}
+
+/* Forms */
+.form-group-modal {
+    margin-bottom: 16px;
+}
+
+.form-group-modal label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+    width: 100%;
+    padding: 12px;
+    padding-left: 40px;
+    /* Space for icon */
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    outline: none;
+    transition: var(--transition);
+}
+
+.input-wrapper textarea {
+    padding-left: 12px;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+    border-color: var(--primary);
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 2px dashed var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.drop-zone:hover {
+    border-color: var(--primary);
+    background: rgba(0, 210, 255, 0.05);
+}
+
+.drop-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: block;
+}
+
+/* Message List */
+.msg-list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.msg-item {
+    background: var(--surface-light);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.msg-header-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.msg-body {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.status-check {
+    color: var(--success);
+}
+
+.btn-primary-full {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: black;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: var(--transition);
+}
+
+.btn-primary-full:hover {
+    opacity: 0.9;
+}
+
+/* Grid Layouts */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 600px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}

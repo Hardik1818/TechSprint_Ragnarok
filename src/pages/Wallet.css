@@ -1,0 +1,438 @@
+.wallet-container {
+    display: flex;
+    flex-direction: column;
+    /* Remove gap to allow sticky elements to flush */
+    gap: 0;
+}
+
+/* Wallet Header */
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    margin-bottom: 0;
+    /* Handled by balance bar */
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.title-section h1 {
+    margin: 0;
+    line-height: 1;
+}
+
+.btn-primary.compact {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    height: 36px;
+    border-radius: 18px;
+    /* Pill shape */
+}
+
+.btn-secondary.compact {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    height: 36px;
+    border-radius: 18px;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary.compact:hover {
+    background: var(--surface-light);
+    border-color: var(--text-muted);
+}
+
+/* Sticky Balance Bar */
+.sticky-balance-bar {
+    position: sticky;
+    top: 80px;
+    /* Below global header */
+    z-index: 80;
+    background: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    margin: 0 -32px 32px -32px;
+    /* Negative margin to span full width if in a padded container */
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Box shadow for depth */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Adjust negative margins based on container padding. 
+   Assuming .content has padding. If wallet-container is top level div in .content with padding.
+   Actually, .content has padding: 32px (usually). 
+   To make it full width sticky, we need negative margins.
+*/
+
+.balance-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-main .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.balance-main .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(to right, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.balance-stats {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.stat-item .divider {
+    width: 1px;
+    height: 40px;
+    background: var(--glass-border);
+}
+
+.s-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.s-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.s-value.positive {
+    color: var(--success);
+}
+
+.s-value.negative {
+    color: var(--error);
+    /* Assuming error var exists, or use #ff4d4d */
+}
+
+/* Main Layout */
+.wallet-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.wallet-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Transaction History */
+.transaction-history {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.history-filters {
+    display: flex;
+    gap: 12px;
+}
+
+.search-box {
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 150px;
+    outline: none;
+    color: var(--text);
+}
+
+.filter-select {
+    position: relative;
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-select select {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--text);
+    cursor: pointer;
+    appearance: none;
+    padding-right: 16px;
+    outline: none;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tx-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.tx-row:hover {
+    background: var(--glass);
+    border-color: transparent;
+}
+
+.tx-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.tx-icon.daily_credit {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--success);
+}
+
+.tx-icon.withdraw {
+    background: rgba(255, 179, 0, 0.1);
+    color: var(--warning);
+}
+
+.tx-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tx-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.tx-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.tx-amt {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.tx-amt.daily_credit {
+    color: var(--success);
+}
+
+.tx-amt.withdraw {
+    color: var(--text);
+}
+
+/* Sidebar */
+.wallet-side {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.side-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.side-card h4 {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.transfer-icons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.t-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.t-icon:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(0, 210, 255, 0.1);
+}
+
+.chart-placeholder {
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.chart-placeholder .bar {
+    flex: 1;
+    background: var(--surface-light);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.chart-placeholder .bar:hover {
+    background: var(--primary);
+}
+
+.analysis-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.analysis-text strong {
+    color: var(--success);
+}
+
+.btn-outline {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: black;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .wallet-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .wallet-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-content,
+    .title-section,
+    .header-actions {
+        width: 100%;
+    }
+
+    .title-section {
+        justify-content: space-between;
+    }
+
+    .sticky-balance-bar {
+        /* Mobile adjustment for negative margins */
+        margin: 0 -16px 24px -16px;
+        padding: 16px;
+        top: 70px;
+        /* Header is shorter on mobile */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .balance-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .stat-item {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .sticky-balance-bar {
+        top: 64px;
+        margin: 0 -16px 20px -16px;
+    }
+
+    .title-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .balance-main .amount {
+        font-size: 1.75rem;
+    }
+}

@@ -1,0 +1,231 @@
+.admin-stats {
+    display: flex;
+    gap: 24px;
+    margin: 32px 0;
+}
+
+.admin-stat-card {
+    flex: 1;
+    background: var(--surface);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.s-icon {
+    color: var(--primary);
+}
+
+.s-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.s-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.search-box-sm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-light);
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.search-box-sm input {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 0.8rem;
+    width: 100px;
+}
+
+.org-list-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.org-row-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--surface-light);
+    border-radius: 8px;
+}
+
+.org-info-mini {
+    display: flex;
+    flex-direction: column;
+}
+
+.org-info-mini span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    /* Changed default to muted for better contrast with specific fields */
+}
+
+.mock-bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    height: 100px;
+    margin: 24px 0;
+}
+
+.m-bar {
+    flex: 1;
+    background: var(--primary);
+    border-radius: 4px;
+    opacity: 0.5;
+}
+
+.i-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Table Styles */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 16px 24px;
+    background: var(--surface-light);
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.admin-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--glass-border);
+    font-size: 0.95rem;
+}
+
+.admin-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Button Styles - UPDATED */
+.btn-secondary {
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(0, 210, 255, 0.05);
+}
+
+.btn-action {
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-action.edit {
+    background: rgba(255, 179, 0, 0.1);
+    color: var(--warning);
+    border-color: rgba(255, 179, 0, 0.2);
+}
+
+.btn-action.edit:hover {
+    background: rgba(255, 179, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-action.approve {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--success);
+    border-color: rgba(0, 230, 118, 0.2);
+}
+
+.btn-action.approve:hover {
+    background: rgba(0, 230, 118, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-action.reject {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--error);
+    border-color: rgba(255, 77, 77, 0.2);
+}
+
+.btn-action.reject:hover {
+    background: rgba(255, 77, 77, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .admin-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .admin-stat-card {
+        padding: 20px;
+    }
+
+    .admin-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-stats {
+        margin: 24px 0;
+    }
+
+    .admin-stat-card {
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .s-value {
+        font-size: 1.25rem;
+    }
+
+    .admin-grid {
+        gap: 16px;
+    }
+}

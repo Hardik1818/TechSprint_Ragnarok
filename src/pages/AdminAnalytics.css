@@ -1,0 +1,130 @@
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.overview-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 300px;
+}
+
+.velocity-stat {
+    margin: 24px 0;
+}
+
+.velocity-stat h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin: 8px 0;
+}
+
+.velocity-stat .positive {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 100px;
+}
+
+.mini-chart .bar {
+    flex: 1;
+    background: var(--primary);
+    opacity: 0.2;
+    border-radius: 4px 4px 0 0;
+    transition: var(--transition);
+}
+
+.mini-chart .bar:hover {
+    opacity: 0.8;
+}
+
+/* Donut Chart Mock */
+.donut-chart-mock {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 30px solid var(--primary);
+    border-right-color: var(--secondary);
+    border-bottom-color: var(--accent);
+    margin: 20px auto;
+    position: relative;
+    transform: rotate(45deg);
+}
+
+.legend {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 20px;
+}
+
+.l-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.blue {
+    background: var(--primary);
+}
+
+.dot.purple {
+    background: var(--secondary);
+}
+
+.dot.orange {
+    background: var(--accent);
+}
+
+/* Geography */
+.geography-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.geography-card .card-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.geo-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.geo-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--glass-border);
+    font-size: 0.95rem;
+}
+
+.geo-row.header {
+    background: var(--surface-light);
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.geo-row:last-child {
+    border-bottom: none;
+}
+
+.growth.positive {
+    color: var(--success);
+}

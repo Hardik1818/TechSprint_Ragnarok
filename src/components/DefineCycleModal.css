@@ -1,0 +1,81 @@
+.form-group-modal {
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group-modal label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon svg {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+}
+
+.input-with-icon input,
+.input-with-icon select {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background: var(--surface-light);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1rem;
+}
+
+.cycle-summary {
+    background: rgba(0, 210, 255, 0.05);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 210, 255, 0.1);
+    margin-bottom: 24px;
+    width: 100%;
+    text-align: left;
+}
+
+.cycle-summary p {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+}
+
+.cycle-summary strong {
+    color: var(--text);
+}
+
+.confirm-card {
+    width: 100%;
+    background: var(--surface-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.c-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.c-row span {
+    color: var(--text-muted);
+}
+
+.c-row.total {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 1.1rem;
+}

@@ -1,0 +1,189 @@
+.org-payroll {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.payroll-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.stream-monitor-card {
+    background: linear-gradient(135deg, #0f1014 0%, #16161a 100%);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0, 210, 255, 0.05);
+}
+
+.monitor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--error);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.blink-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+        box-shadow: 0 0 10px var(--error);
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px var(--error);
+    }
+}
+
+.date-tag {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+}
+
+.stream-display {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.stream-display .currency {
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.stream-display h1 {
+    font-size: 5rem;
+    line-height: 1;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+}
+
+.stream-label {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.stream-chart-mock {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    opacity: 0.1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.chart-icon {
+    width: 100%;
+    height: 100%;
+    color: var(--primary);
+}
+
+/* Funding Card */
+.funding-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.funding-card h3 {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 24px;
+}
+
+.balance-box {
+    margin-bottom: 32px;
+}
+
+.balance-box .sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.balance-box h2 {
+    font-size: 2.5rem;
+    margin: 8px 0;
+}
+
+.balance-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.balance-status.good {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--success);
+}
+
+.fund-stats {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 24px;
+}
+
+.f-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.f-stat span {
+    color: var(--text-muted);
+}
+
+@media (max-width: 1024px) {
+    .payroll-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stream-display h1 {
+        font-size: 3.5rem;
+    }
+}

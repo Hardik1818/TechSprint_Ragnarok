@@ -1,73 +1,28 @@
-# React + TypeScript + Vite
+# DailyPay Nepal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Problem Statement
+In Nepal, salaried employees receive their income only once a month, even though daily expenses like food, transport, and emergencies occur every day. This creates cash flow stress, forces people to borrow money at high interest, or rely on informal lending. Government and private employees, especially those living paycheck to paycheck, have no flexible access to their already-earned salary before payday.
 
-Currently, two official plugins are available:
+## Solution
+**DailyPay Nepal** is a salary access platform that allows employees to receive their earned salary on a daily basis instead of waiting for the end of the month. Organizations deposit the monthly salary into the platform at the beginning of the cycle, and the system automatically releases a fixed daily amount to employees’ wallets.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Employees can:
+- Use the balance for digital payments  
+- Transfer it to their bank account when needed  
 
-## React Compiler
+This improves financial stability, reduces dependence on loans, and gives users better control over their own earnings **without increasing employer cost**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
+- **Frontend:** React (Web Dashboard)
+- **Backend:** Node.js, Express
+- **Database:** MongoDB Atlas (secure transaction and user data storage)
+- **Authentication:** JWT
+- **Payments:** Integration with Nepalese digital wallets and banking APIs
+- **Deployment:** Vercel
+- **Security:** Basic encryption and role-based access control (RBAC)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Team Members
+- Hardik Thapaliya  
+- Aryan Shah  
+- Biraj Kandel  
+- Abhi Poudel
